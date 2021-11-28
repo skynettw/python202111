@@ -28,9 +28,20 @@
         <li class="nav-item">
           <a class="nav-link" href="https://ccet.nkust.edu.tw">不分系</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/lotto/">樂透預測</a>
-        </li>
+
+        {% if request.user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/">控制台</a>
+          </li>          
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/logout/?next=/">登出</a>
+          </li>          
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/login/?next=/">使用者登入</a>
+          </li>
+        {% endif %}
+
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             我的播放清單
@@ -51,11 +62,30 @@
 		<h2>{{ lucky }}</h2>
 		<hr>
 		</center>
-		<ul>
+{% if request.user.is_authenticated %}
+    <form action="/" method="post">
+      {% csrf_token %}
+      {{ form }}
+      <input type="submit" value="新增清單">
+    </form>
+{% endif %}
+		<table class="table table-striped">
+      <tr>
+        <td>清單名稱</td><td>建立時間</td>
+{% if request.user.is_authenticated %}
+        <td>刪除</td>
+{% endif %}
+      </tr>
 		{% for video in videolists %}
-			<li>{{ video.name }}/{{ video.pub_date }}</li>
+			<tr>
+        <td>{{ video.name }}</td>
+        <td>{{ video.pub_date }}</td>
+        {% if request.user.is_authenticated %}
+        <td><a class="btn btn-outline-primary btn-sm" href="/delete/{{video.id}}/">刪除</a></td>
+        {% endif %}
+      </tr>
 		{% endfor %}
-		</ul>
+		</table>
 	</div>
     <!-- Optional JavaScript; choose one of the two! -->
 
